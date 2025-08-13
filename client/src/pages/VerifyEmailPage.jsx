@@ -69,9 +69,9 @@ const VerifyEmailPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
             >
-                <h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>Verify Your Email</h2>
+                <h2 className='mt-6 text-center text-3xl font-extrabold text-blue-400'>Verify Your Email</h2>
                 <p className="mt-2 text-center text-sm text-gray-400">
-                    We've sent a 4-digit PIN to <span className="font-medium text-emerald-300">{emailToVerify}</span>
+                    We've sent a 4-digit PIN to <span className="font-medium text-blue-300">{emailToVerify}</span>
                 </p>
             </motion.div>
 
@@ -97,7 +97,7 @@ const VerifyEmailPage = () => {
                                         value={digit}
                                         onChange={(e) => handleChange(e, index)}
                                         onKeyDown={(e) => handleKeyDown(e, index)}
-                                        className="w-12 h-12 bg-gray-700 border border-gray-600 rounded-md text-center text-2xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                        className="w-12 h-12 bg-gray-700 border border-gray-600 rounded-md text-center text-2xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 ))}
                             </div>
@@ -106,9 +106,9 @@ const VerifyEmailPage = () => {
                         <button
                             type='submit'
                             className='w-full flex justify-center py-2 px-4 border border-transparent 
-                            rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600
-                             hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-                              focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50'
+                            rounded-md shadow-sm text-sm font-medium text-white bg-blue-600
+                             hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                              focus:ring-blue-500 transition duration-150 ease-in-out disabled:opacity-50'
                             disabled={loading}
                         >
                             {loading ? (
@@ -132,7 +132,7 @@ const VerifyEmailPage = () => {
                                 type="button"
                                 onClick={handleResendPin}
                                 disabled={isResending}
-                                className="font-medium text-emerald-400 hover:text-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="font-medium text-blue-400 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isResending ? "Sending..." : "Resend PIN"}
                             </button>
