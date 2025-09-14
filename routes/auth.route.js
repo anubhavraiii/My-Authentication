@@ -1,16 +1,16 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { login, logout, signup, refreshToken, getProfile, googleAuthSuccess, googleAuthFailure, forgotPassword, resetPassword, verifyEmail, resendVerificationPin } from '../controllers/auth.controller.js';
-import { protectRoute } from '../middleware/auth.middleware.js';
+import { protectRoute, authLimiter } from '../middleware/auth.middleware.js';
 import passport from '../lib/passport.js';
 
 const router = express.Router();
 
-const authLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 5, // Limit each IP to 5 requests per windowMs
-	message: 'Too many requests from this IP, please try again after 15 minutes',
-});
+// const authLimiter = rateLimit({
+// 	windowMs: 15 * 60 * 1000, // 15 minutes
+// 	max: 5, // Limit each IP to 5 requests per windowMs
+// 	message: 'Too many requests from this IP, please try again after 15 minutes',
+// });
 
 router.post("/signup", authLimiter, signup);
 router.post("/login", authLimiter, login);

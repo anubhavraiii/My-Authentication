@@ -4,7 +4,7 @@ import {redis} from "../lib/redis.js";
 import crypto from 'crypto';
 import sendEmail from "../lib/sendEmail.js";
 
-const MAX_FAILED_ATTEMPTS = 3;
+const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_TIME = 15 * 60 * 1000;
 
 const generateVerificationPin = () => {
@@ -23,13 +23,12 @@ const generateToken = (userId) => {
     return { accessToken, refreshToken };
 }
 
-// refresh token is stored in upstash/redis with a 7 day expiration
 const storeRefreshToken = async (userId, refreshToken) => {
     await redis.set(`refresh_token:${userId}`, refreshToken, "EX", 7 * 24 * 60 * 60);
 }
 
 const setCookies = (res, accessToken, refreshToken) => {
-    res.cookie("accessToken", accessToken, {
+    res.cookie("accessToken", accessToken, { 
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict", 
@@ -151,7 +150,7 @@ export const login = async (req, res) => {
             
             if (user.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
                 user.lockUntil = Date.now() + LOCK_TIME;
-                //user.failedLoginAttempts = 0; // Reset after locking
+                //user.failedLoginAttempts = 0; 
                 await user.save();
                 return res.status(403).json({ message: `Account locked for 15 minutes due to too many failed attempts.` });
             }
@@ -224,7 +223,7 @@ export const logout = async (req, res) => {
     }
 }
 
-export const refreshToken = async (req, res) => {
+export const refreshToken = async (req, res) => { // to regenerate access token
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) {
@@ -245,7 +244,7 @@ export const refreshToken = async (req, res) => {
         res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "strict",
         maxAge: 15 * 60 * 1000 // 15 minutes
         });
 
@@ -288,23 +287,22 @@ export const googleAuthFailure = (req, res) => {
 
 export const forgotPassword = async (req, res) => {
     try {
-        // 1) Get user based on POSTed email
         const user = await User.findOne({ email: req.body.email });
         if (!user) {
-            // Send a generic success message to prevent email enumeration
+            // a generic success message to prevent email enumeration
             return res.status(200).json({ message: 'If a user with that email exists, a token has been sent.' });
         }
 
-        // 2) Generate the random reset token
+        // Generate the random reset token
         const resetToken = crypto.randomBytes(32).toString('hex');
 
-        // 3) Hash token and save to user document
+        // Hash token and save to user document
         user.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
         user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
         await user.save({ validateBeforeSave: false });
 
-        // 4) Send it to user's email
+        // Send it to user's email
         const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
         const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
