@@ -15,7 +15,7 @@ export const useUserStore = create((set, get) => ({
 		}
 		try {
 			const res = await axios.post("/auth/signup", formData);
-            // we don't set user, just return success and email for redirection
+            // we don't set user, we just return success and email for redirection
 			return { success: true, email: res.data.email }; 
 		} catch (error) {
 			toast.error(error.response.data.message || "An error occurred");
